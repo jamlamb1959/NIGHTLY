@@ -1,0 +1,34 @@
+#!/bin/sh
+
+echo '$*: ' $*
+
+PKG=${1:-linda}
+ARCH=$(uname -m)
+BRANCH=$(basename ${GIT_BRANCH:-$(git rev-parse --abbrev-ref HEAD)})
+if [ -z $BRANCH ]
+then
+BRANCH=jal
+fi
+
+HST=repo.lam
+
+echo '$ARCH: ' $ARCH
+echo '$BRANCH: ' $BRANCH
+echo '$*: ' $*
+
+cd /tmp
+sudo rm -f *.deb
+
+while [ $# -gt 0 ]
+do
+echo "scp ${HST}:/repo/${ARCH}/${BRANCH}/$1-*.deb ."
+scp ${HST}:/repo/${ARCH}/${BRANCH}/$1-*.deb .
+ls -l *.deb
+echo "sudo apt remove $1 -y"
+sudo apt remove $1 -y
+echo "sudo apt install ./$1-*.deb -y"
+sudo apt install ./$1-*.deb -y
+shift
+done
+
+exit 0

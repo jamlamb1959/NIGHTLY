@@ -1,0 +1,48 @@
+#!/bin/sh
+
+ARCH=$(uname -m)
+BR=${GIT_BRANCH:=$(git rev-parse --abbrev-ref HEAD)}
+BRANCH=$(basename ${BR})
+PKG=${1:-stuff}
+
+echo '$ARCH: ' $ARCH
+echo '$BRANCH: ' $BRANCH
+echo '$PKG: ' $PKG
+
+echo "ssh repo.lam \"mkr ${ARCH} ${BRANCH}\""
+ssh repo.lam "mkr ${ARCH} ${BRANCH}"
+
+ex()
+	{
+	echo
+	echo "$*"
+	echo
+	$*
+	RC=$?
+	if [ ${RC} -ne 0 ]
+	then
+	echo "$0: failed. RC: ${RC}"
+	exit ${RC}
+	fi
+	return 0
+	}
+
+BLDDIR=bld.script
+
+ex bld
+
+ex cd ${BLDDIR}
+ex cmake ..
+
+ex sudo rm -rf *.deb
+
+ex make package
+
+echo "ssh repo.lam \"rm -f /repo/${ARCH}/${BRANCH}/${PKG}-*\""
+ssh repo.lam "rm -f /repo/${ARCH}/${BRANCH}/${PKG}-*"
+
+echo "scp *.deb repo.lam:/repo/${ARCH}/${BRANCH}/"
+scp *.deb repo.lam:/repo/${ARCH}/${BRANCH}/
+
+echo "saved pakage: *.deb, ARCH: ${ARCH}, BRANCH: ${BRANCH}"
+

@@ -1,0 +1,10 @@
+#!/bin/sh
+
+set -x
+
+echo "bld.setup(entered)"
+
+sudo apt update
+sudo apt upgrade -y && true
+sudo apt install cmake dpkg-dev libcppunit-dev libmicrohttpd-dev libmosquitto-dev mosquitto-dev make g++ uuid-dev -y && true
+

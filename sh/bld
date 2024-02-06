@@ -1,0 +1,40 @@
+#!/bin/sh
+
+ex()
+	{
+	echo
+	echo "$*"
+	echo
+	$*
+	RC=$?
+	if [ ${RC} -ne 0 ]
+	then
+	echo "$0: failed. RC: ${RC}"
+	exit ${RC}
+	fi
+	}
+
+BLDDIR=bld.script
+
+rm -rf ${BLDDIR}
+
+if [ ! -d ${BLDDIR} ]
+then
+mkdir ${BLDDIR}
+cd ${BLDDIR}
+cmake ..
+cd ..
+fi
+
+cd ${BLDDIR}
+ex make -j
+
+if which ut
+then
+find . -name "*Test*" -print | grep ".so$" | while read LIB
+	do
+	echo "ut -d ${LIB}"
+	ut -d ${LIB}
+	done
+fi
+

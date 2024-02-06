@@ -1,0 +1,6 @@
+#!/bin/sh
+
+echo "mkdir -p /repo/$1/$2"
+
+mkdir -p /repo/$1/$2
+

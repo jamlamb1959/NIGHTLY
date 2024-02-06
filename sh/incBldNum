@@ -1,0 +1,25 @@
+#!/bin/sh
+
+PKG=${1:-huh}
+
+if [ ! -d ~/.bldnum ]
+then
+mkdir -p ~/.bldnum
+fi
+
+if [ ! -r ~/.bldnum/${PKG} ]
+then
+echo "1" >~/.bldnum/${PKG} 
+fi
+
+if [ -r ~/.bldnum/${PKG} ]
+then
+OLDN=$(cat ~/.bldnum/${PKG})
+NEWN=$(expr ${OLDN} + 1)
+echo ${NEWN}
+echo ${NEWN} > ~/.bldnum/$PKG
+
+else
+echo "1"
+fi
+
